@@ -1,0 +1,79 @@
+<!-- upload.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Run Photo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <script>
+    const pass = prompt("Enter password to upload:");
+    if (pass !== "runclub123") {
+      alert("Incorrect password");
+      window.location.href = "/";
+    }
+  </script>
+
+  <h1>Upload a Run</h1>
+  <form id="uploadForm">
+    <label for="photo">Photo:</label>
+    <input type="file" id="photo" accept="image/*" required><br>
+
+    <label for="caption">Caption:</label>
+    <textarea id="caption" required></textarea><br>
+
+    <button type="submit">Upload</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    const CLOUD_NAME = "dhz1cvu0c";
+    const UPLOAD_PRESET = "morningrunblog";
+
+    const form = document.getElementById('uploadForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const file = document.getElementById('photo').files[0];
+      const caption = document.getElementById('caption').value;
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', UPLOAD_PRESET);
+
+      status.innerText = 'Uploading image...';
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      const imageUrl = data.secure_url;
+
+      status.innerText = 'Saving blog post...';
+
+      await fetch('/.netlify/functions/submitPost', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl, caption, date: new Date().toISOString() })
+      });
+
+      status.innerText = 'Upload successful!';
+      form.reset();
+    });
+  </script>
+</body>
+</html>
+
+
+<!-- blog.html -->
+
+
+

@@ -18,23 +18,31 @@
   </header>
 
   <section id="blog-posts">
-    <article>
-      <h2>June 17, 2025</h2>
-      <img src="images/run1.jpg" alt="Group running on trail" style="width: 90%; max-width: 600px;" />
-      <p>This was our first official run! Everyone brought great energy, and the sunrise was amazing. We shared Psalm 118:24 before we started.</p>
-    </article>
-
-    <article>
-      <h2>June 24, 2025</h2>
-      <img src="images/run2.jpg" alt="Smiling group photo after run" style="width: 90%; max-width: 600px;" />
-      <p>Great turnout this week! Special thanks to Ava for reading Isaiah 40:31 before we began.</p>
-    </article>
-
-    <!-- Add more articles here -->
+    <a href="upload.html">Upload a Run</a>
   </section>
 
   <footer>
     <p>&copy; 2025 Morning Run Club</p>
   </footer>
+
+  <script>
+    async function loadPosts() {
+      const res = await fetch('/.netlify/functions/getPosts');
+      const posts = await res.json();
+      const container = document.getElementById('blog-posts');
+
+      posts.reverse().forEach(post => {
+        const entry = document.createElement('article');
+        entry.innerHTML = `
+          <h2>${new Date(post.date).toLocaleDateString()}</h2>
+          <img src="${post.imageUrl}" alt="Run photo" style="width: 90%; max-width: 600px;" />
+          <p>${post.caption}</p>
+        `;
+        container.appendChild(entry);
+      });
+    }
+
+    loadPosts();
+  </script>
 </body>
 </html>
