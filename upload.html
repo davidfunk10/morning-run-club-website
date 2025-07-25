@@ -9,12 +9,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <script>
-    const pass = prompt("Enter password to upload:");
-    if (pass !== "runclub123") {
-      alert("Incorrect password");
-      window.location.href = "/";
-    }
+  const pass = prompt("Enter password to upload:");
+  if (pass !== "runclub123") {
+    alert("Incorrect password");
+    window.location.href = "index.html"; // Editable: Redirect to home if password is incorrect
+  }
   </script>
 
   <h1>Upload a Run</h1>
@@ -25,7 +26,10 @@
     <label for="caption">Caption:</label>
     <textarea id="caption" required></textarea><br>
 
-    <button type="submit">Upload</button>
+    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+      <button type="button" onclick="window.location.href='index.html'">⬅ Back</button>
+      <button type="submit">Upload</button>
+    </div>
   </form>
 
   <p id="status"></p>
