@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Morning Run Blog</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <header>
     <h1>Morning Run Blog</h1>
@@ -34,10 +36,27 @@
       posts.reverse().forEach(post => {
         const entry = document.createElement('article');
         entry.innerHTML = `
-          <h2>${new Date(post.date).toLocaleDateString()}</h2>
-          <img src="${post.imageUrl}" alt="Run photo" style="width: 90%; max-width: 600px;" />
-          <p>${post.caption}</p>
-        `;
+  <h2>${new Date(post.date).toLocaleDateString()}</h2>
+  <div class="image-gallery"></div>
+  <p>${post.caption}</p>
+`;
+
+        const gallery = entry.querySelector('.image-gallery');
+
+        // Loop through each image in the post
+        if (Array.isArray(post.imageUrls)) {
+          post.imageUrls.forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = "Run photo";
+            img.style.width = "100%";
+            img.style.maxWidth = "300px";
+            img.style.borderRadius = "10px";
+            img.style.boxShadow = "0 0 5px rgba(0,0,0,0.1)";
+            img.style.marginBottom = "2rem";
+            gallery.appendChild(img);
+          });
+        }
         container.appendChild(entry);
       });
     }
@@ -45,4 +64,5 @@
     loadPosts();
   </script>
 </body>
+
 </html>

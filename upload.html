@@ -21,7 +21,7 @@
   <h1>Upload a Run</h1>
   <form id="uploadForm">
     <label for="photo">Photo:</label>
-    <input type="file" id="photo" accept="image/*" required><br>
+    <input type="file" id="photo" accept="image/*" multiple required>
 
     <label for="caption">Caption:</label>
     <textarea id="caption" required></textarea><br>
@@ -44,29 +44,32 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const file = document.getElementById('photo').files[0];
+      const files = document.getElementById('photo').files;
       const caption = document.getElementById('caption').value;
+      const uploadedImageUrls = [];
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', UPLOAD_PRESET);
+  status.innerText = 'Uploading images...';
 
-      status.innerText = 'Uploading image...';
+  for (const file of files) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET); // Use your actual upload preset
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-        method: 'POST',
-        body: formData
-      });
+   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
 
-      const data = await res.json();
-      const imageUrl = data.secure_url;
-
+  const data = await res.json();
+  uploadedImageUrls.push(data.secure_url);
+}
       status.innerText = 'Saving blog post...';
 
       await fetch('/.netlify/functions/submitPost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl, caption, date: new Date().toISOString() })
+        body: JSON.stringify({ imageUrls: uploadedImageUrls, caption, date: new Date().toISOString() })
+
       });
 
       status.innerText = 'Upload successful!';
@@ -77,7 +80,6 @@
 </html>
 
 
-<!-- blog.html -->
 
 
 

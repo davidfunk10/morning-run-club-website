@@ -111,3 +111,30 @@ form textarea {
   padding: 0.5rem;
   box-sizing: border-box;
 }
+
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.image-gallery img {
+  flex: 1 1 200px;
+  max-width: 300px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#blog-posts article {
+  max-width: 1000px; /* or 100% if you want full-width blog entries */
+  margin: 4rem auto;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+}
+
+#blog-posts h2,
+#blog-posts p {
+  text-align: center;
+}
