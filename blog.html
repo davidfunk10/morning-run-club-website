@@ -46,9 +46,9 @@
 
         // Loop through each image in the post
         if (Array.isArray(post.imageUrls)) {
-          post.imageUrls.forEach(url => {
+          post.imageUrls.forEach(image => {
             const img = document.createElement('img');
-            img.src = url;
+            img.src = typeof image === "string" ? image : image.url;
             img.alt = "Run photo";
             img.style.width = "100%";
             img.style.maxWidth = "300px";
@@ -64,34 +64,34 @@
 
     loadPosts();
 
-        async function deletePost(postDate) {
-        const password = prompt("Enter password to delete this run:");
+    async function deletePost(postDate) {
+      const password = prompt("Enter password to delete this run:");
 
       if (password !== "runclub123") {
         alert("Incorrect password.");
-      return;
-    }
+        return;
+      }
 
       const confirmed = confirm("Are you sure you want to delete this run?");
       if (!confirmed) return;
 
       const res = await fetch('/.netlify/functions/deletePost', {
         method: 'POST',
-      headers: {'Content-Type': 'application/json' },
-      body: JSON.stringify({date: postDate, password })
-    });
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: postDate, password })
+      });
 
       if (res.ok) {
         alert("Post deleted successfully.");
-      location.reload();
-    } else {
+        location.reload();
+      } else {
         alert("Failed to delete post.");
-    }
+      }
     }
 
   </script>
 
- 
+
 </body>
 
 </html>
