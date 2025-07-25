@@ -138,3 +138,18 @@ form textarea {
 #blog-posts p {
   text-align: center;
 }
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
