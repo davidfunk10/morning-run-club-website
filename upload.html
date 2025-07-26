@@ -8,14 +8,36 @@
   <title>Upload Run Photo</title>
   <link rel="stylesheet" href="style.css">
 </head>
+<!-- Firebase core SDK -->
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+<!-- Firebase Realtime Database SDK -->
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDdQctV5kYz-6J1E3eyoIFQS5LMJfofZfo",
+    authDomain: "themorningrunclubwebsite.firebaseapp.com",
+    databaseURL: "https://themorningrunclubwebsite-default-rtdb.firebaseio.com",
+    projectId: "themorningrunclubwebsite",
+    storageBucket: "themorningrunclubwebsite.firebasestorage.app",
+    messagingSenderId: "176502578161",
+    appId: "1:176502578161:web:5146655e2ecf86dc0f0250",
+    measurementId: "G-YYV6TS45EX"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
 <body>
 
   <script>
-  const pass = prompt("Enter password to upload:");
-  if (pass !== "runclub123") {
-    alert("Incorrect password");
-    window.location.href = "index.html"; // Editable: Redirect to home if password is incorrect
-  }
+    const pass = prompt("Enter password to upload:");
+    if (pass !== "runclub123") {
+      alert("Incorrect password");
+      window.location.href = "index.html"; // Editable: Redirect to home if password is incorrect
+    }
   </script>
 
   <h1>Upload a Run</h1>
@@ -48,38 +70,36 @@
       const caption = document.getElementById('caption').value;
       const uploadedImageUrls = [];
 
-  status.innerText = 'Uploading images...';
+      status.innerText = 'Uploading images...';
 
-  for (const file of files) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET); // Use your actual upload preset
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
 
-   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-      method: 'POST',
-      body: formData
-    });
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: 'POST',
+          body: formData
+        });
 
-  const data = await res.json();
-  uploadedImageUrls.push(data.secure_url);
-}
+        const data = await res.json();
+        uploadedImageUrls.push(data.secure_url);
+      }
+
       status.innerText = 'Saving blog post...';
 
-      await fetch('/.netlify/functions/submitPost', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrls: uploadedImageUrls, caption, date: new Date().toISOString() })
-
+      const newPostRef = db.ref('posts').push();
+      await newPostRef.set({
+        imageUrls: uploadedImageUrls,
+        caption: caption,
+        date: new Date().toISOString()
       });
 
       status.innerText = 'Upload successful!';
       form.reset();
     });
+
   </script>
 </body>
+
 </html>
-
-
-
-
-

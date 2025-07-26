@@ -19,77 +19,74 @@
     </nav>
   </header>
 
-  <section id="blog-posts">
-    <a href="upload.html">Upload a Run</a>
-  </section>
+<div style="text-align: center; margin-top: 1rem;">
+  <a href="upload.html" class="button">Upload a Run</a>
+</div>
+
+<section id="blog-posts"></section>
 
   <footer>
     <p>&copy; 2025 Morning Run Club</p>
   </footer>
 
-  <script>
-    async function loadPosts() {
-      const res = await fetch('/.netlify/functions/getPosts');
-      const posts = await res.json();
-      const container = document.getElementById('blog-posts');
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-database-compat.js"></script>
 
-      posts.reverse().forEach(post => {
-        const entry = document.createElement('article');
-        entry.innerHTML = `
-  <h2>${new Date(post.date).toLocaleDateString()}</h2>
-  <div class="image-gallery"></div>
-  <p>${post.caption}</p>
-  <button class="delete-btn" onclick="deletePost('${post.date}')">🗑️ Delete</button>
-`;
+<script>
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDdQctV5kYz-6J1E3eyoIFQS5LMJfofZfo",
+    authDomain: "themorningrunclubwebsite.firebaseapp.com",
+    databaseURL: "https://themorningrunclubwebsite-default-rtdb.firebaseio.com",
+    projectId: "themorningrunclubwebsite",
+    storageBucket: "themorningrunclubwebsite.firebasestorage.app",
+    messagingSenderId: "176502578161",
+    appId: "1:176502578161:web:5146655e2ecf86dc0f0250",
+    measurementId: "G-YYV6TS45EX"
+  };
 
-        const gallery = entry.querySelector('.image-gallery');
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-        // Loop through each image in the post
-        if (Array.isArray(post.imageUrls)) {
-          post.imageUrls.forEach(image => {
-            const img = document.createElement('img');
-            img.src = typeof image === "string" ? image : image.url;
-            img.alt = "Run photo";
-            img.style.width = "100%";
-            img.style.maxWidth = "300px";
-            img.style.borderRadius = "10px";
-            img.style.boxShadow = "0 0 5px rgba(0,0,0,0.1)";
-            img.style.marginBottom = "2rem";
-            gallery.appendChild(img);
-          });
-        }
-        container.appendChild(entry);
-      });
-    }
+  async function loadPosts() {
+    const container = document.getElementById('blog-posts');
 
-    loadPosts();
+    const snapshot = await db.ref('posts').once('value');
+    const postsObj = snapshot.val();
+    const posts = postsObj ? Object.values(postsObj) : [];
 
-    async function deletePost(postDate) {
-      const password = prompt("Enter password to delete this run:");
+    posts.reverse().forEach(post => {
+      const entry = document.createElement('article');
+      entry.innerHTML = `
+        <h2>${new Date(post.date).toLocaleDateString()}</h2>
+        <div class="image-gallery"></div>
+        <p>${post.caption}</p>
+      `;
 
-      if (password !== "runclub123") {
-        alert("Incorrect password.");
-        return;
+      const gallery = entry.querySelector('.image-gallery');
+
+      if (Array.isArray(post.imageUrls)) {
+        post.imageUrls.forEach(url => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = "Run photo";
+          img.style.width = "100%";
+          img.style.maxWidth = "300px";
+          img.style.borderRadius = "10px";
+          img.style.boxShadow = "0 0 5px rgba(0,0,0,0.1)";
+          img.style.marginBottom = "2rem";
+          gallery.appendChild(img);
+        });
       }
 
-      const confirmed = confirm("Are you sure you want to delete this run?");
-      if (!confirmed) return;
+      container.appendChild(entry);
+    });
+  }
 
-      const res = await fetch('/.netlify/functions/deletePost', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: postDate, password })
-      });
-
-      if (res.ok) {
-        alert("Post deleted successfully.");
-        location.reload();
-      } else {
-        alert("Failed to delete post.");
-      }
-    }
-
-  </script>
+  loadPosts();
+</script>
 
 
 </body>
